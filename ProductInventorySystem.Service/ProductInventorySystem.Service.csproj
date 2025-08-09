@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ProductInventorySystem.DataService\ProductInventorySystem.DataAccess.csproj" />
+    <ProjectReference Include="..\ProductInventorySystem.DomainModel\ProductInventorySystem.DomainModel.csproj" />
+    <ProjectReference Include="..\ProductInventorySystem.Interface\ProductInventorySystem.Interface.csproj" />
+  </ItemGroup>
+
+</Project>
