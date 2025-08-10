@@ -22,17 +22,23 @@ namespace ProductInventorySystem.Controllers
             _productService = productService;
             _productService.connectionString = _configuration["ConnectionStrings"];
         }
-        //[HttpGet]
-        //[ActionName("product")]
-        //public IActionResult GetProducts()
-        //{
-        //    return Ok('g');
-        //}
-        [HttpPost]
+        [HttpGet]
         [ActionName("product")]
         [EnableCors()]
         [ApiExplorerSettings(IgnoreApi = false)]
         //[Authorize]
+        public IActionResult GetProducts([FromQuery] FilterModel filter)
+        {
+           
+            List<ProductModel> products = new List<ProductModel>();
+            products = _productService.GetProductsAndStocks(filter);
+            return Ok(products);
+        }
+        [HttpPost]
+        [ActionName("product")]
+        [EnableCors()]
+        [ApiExplorerSettings(IgnoreApi = false)]
+        [Authorize]
         public IActionResult UpdateProduct(ProductJson product)
         {
             HttpResponseModel httpResponseModel = new HttpResponseModel();
@@ -52,6 +58,7 @@ namespace ProductInventorySystem.Controllers
             httpResponseModel = _productService.AddStock(product);
             return Ok(httpResponseModel);
         }
+
         //[HttpDelete]
         //[ActionName("product")]
         //public IActionResult Delete()

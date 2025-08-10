@@ -10,5 +10,6 @@ namespace ProductInventorySystem.DomainModel
     {
         public string SP_Product_InsertProduct = "usp_Product_InsertProduct";
         public string SP_Product_InsertStock = "usp_Stock_InsertStock";
+        public string SP_Product_GetProductsAndStock = "usp_Product_GetByStockOrProduct";
     }
 }

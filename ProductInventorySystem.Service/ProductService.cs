@@ -17,6 +17,11 @@ namespace ProductInventorySystem.Service
             ProductDataService productDataService = new ProductDataService(connectionString);
             return productDataService.AddStock(productJson);
         }
+        public List<ProductModel> GetProductsAndStocks(FilterModel filter)
+        {
+            ProductDataService productDataService = new ProductDataService(connectionString);
+            return productDataService.SelectProduct(filter);
+        }
         
 
     }

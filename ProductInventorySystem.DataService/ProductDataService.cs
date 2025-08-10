@@ -81,6 +81,75 @@ namespace ProductInventorySystem.DataService
             }
         }
 
+        public List<ProductModel> SelectProduct(FilterModel filter)
+        {
+            List<ProductModel> products = new List<ProductModel>();
+            Procedures procedures = new Procedures();
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.Connection = connection;
+                command.CommandText = procedures.SP_Product_GetProductsAndStock;
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@stock_id", filter.StockId);
+                command.Parameters.AddWithValue("@product_id", filter.ProductId);
+
+                connection.Open();
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+
+                        ProductModel product = new ProductModel();
+
+                        int productIdIndex = reader.GetOrdinal("product_id");
+                        if (!reader.IsDBNull(productIdIndex))
+                        {
+                            product.ProductId = reader.GetGuid(productIdIndex);
+                        }
+                        else
+                        {
+                            product.ProductId = Guid.Empty; // Or handle error
+                        }
+
+                        product.ProductName = reader["name"]?.ToString() ?? string.Empty;
+                        product.Variants = new List<Variant>();
+
+
+
+                        string variantName = reader["variant"]?.ToString();
+                        if (!string.IsNullOrWhiteSpace(variantName))
+                        {
+                            var variant = product.Variants.FirstOrDefault(v => v.VariantName == variantName);
+                            if (variant == null)
+                            {
+                                variant = new Variant
+                                {
+                                    VariantName = variantName,
+                                    SubVariants = new List<string>()
+                                };
+                                product.Variants.Add(variant);
+                            }
+
+                            string subVariantName = reader["options"]?.ToString();
+                            if (!string.IsNullOrWhiteSpace(subVariantName) &&
+                                !variant.SubVariants.Contains(subVariantName))
+                            {
+                                variant.SubVariants.Add(subVariantName);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return products;
+        }
+
+
+
+
 
 
     }

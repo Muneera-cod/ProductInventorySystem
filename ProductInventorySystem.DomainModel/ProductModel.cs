@@ -6,7 +6,7 @@ namespace ProductInventorySystem.DomainModel
     public class ProductModel
     {
         [JsonPropertyName("product_id")]
-        public Guid ProductId { get; set; }
+        public Guid? ProductId { get; set; }
 
         [JsonPropertyName("product_code")]
         public string ProductCode { get; set; }
@@ -25,7 +25,7 @@ namespace ProductInventorySystem.DomainModel
         public DateTimeOffset? UpdatedDate { get; set; }
 
         [JsonPropertyName("created_user")]
-        public Guid CreatedUser { get; set; }
+        public Guid? CreatedUser { get; set; }
 
         [JsonPropertyName("is_favourite")]
         public bool IsFavourite { get; set; }
@@ -38,7 +38,14 @@ namespace ProductInventorySystem.DomainModel
 
         [Required]
         public List<Variant> Variants { get; set; } = new List<Variant>();
-
+        public ProductModel()
+        {
+            ProductId = Guid.Empty;
+            ProductCode = string.Empty;
+            ProductName = string.Empty;
+            HSNCode = string.Empty;
+            Variants = new List<Variant>();
+        }
     }
     public class Variant
     {
@@ -49,7 +56,9 @@ namespace ProductInventorySystem.DomainModel
         [Required, MinLength(1)]
         [JsonPropertyName("options")]
         public List<string> SubVariants { get; set; } = new List<string>();
+
     }
+
 
 
 }

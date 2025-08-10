@@ -9,6 +9,7 @@ namespace ProductInventorySystem.Interface
         HttpResponseModel AddProduct(ProductJson productJson);
 
         HttpResponseModel AddStock(ProductJson productJson);
+        List<ProductModel> GetProductsAndStocks(FilterModel filter);
 
     }
 }
