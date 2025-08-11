@@ -101,7 +101,6 @@ namespace ProductInventorySystem.DataService
                 {
                     while (reader.Read())
                     {
-
                         ProductModel product = new ProductModel();
 
                         int productIdIndex = reader.GetOrdinal("product_id");
@@ -111,36 +110,33 @@ namespace ProductInventorySystem.DataService
                         }
                         else
                         {
-                            product.ProductId = Guid.Empty; // Or handle error
+                            product.ProductId = Guid.Empty;
                         }
 
                         product.ProductName = reader["name"]?.ToString() ?? string.Empty;
                         product.Variants = new List<Variant>();
 
-
-
                         string variantName = reader["variant"]?.ToString();
                         if (!string.IsNullOrWhiteSpace(variantName))
                         {
-                            var variant = product.Variants.FirstOrDefault(v => v.VariantName == variantName);
-                            if (variant == null)
+                            var variant = new Variant
                             {
-                                variant = new Variant
-                                {
-                                    VariantName = variantName,
-                                    SubVariants = new List<string>()
-                                };
-                                product.Variants.Add(variant);
-                            }
+                                VariantName = variantName,
+                                SubVariants = new List<string>()
+                            };
 
                             string subVariantName = reader["options"]?.ToString();
-                            if (!string.IsNullOrWhiteSpace(subVariantName) &&
-                                !variant.SubVariants.Contains(subVariantName))
+                            if (!string.IsNullOrWhiteSpace(subVariantName))
                             {
                                 variant.SubVariants.Add(subVariantName);
                             }
+
+                            product.Variants.Add(variant);
                         }
+
+                        products.Add(product); 
                     }
+
                 }
             }
 

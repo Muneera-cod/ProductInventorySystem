@@ -59,6 +59,7 @@ namespace ProductInventorySystem.Controllers
             return Ok(httpResponseModel);
         }
 
+
         //[HttpDelete]
         //[ActionName("product")]
         //public IActionResult Delete()
