@@ -83,8 +83,8 @@ namespace ProductInventorySystem.DataService
 
         public List<ProductModel> SelectProduct(FilterModel filter)
         {
-            List<ProductModel> products = new List<ProductModel>();
-            Procedures procedures = new Procedures();
+            var products = new List<ProductModel>();
+            var procedures = new Procedures();
 
             using (SqlConnection connection = new SqlConnection(_connectionString))
             using (SqlCommand command = new SqlCommand())
@@ -94,54 +94,56 @@ namespace ProductInventorySystem.DataService
                 command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@stock_id", filter.StockId);
                 command.Parameters.AddWithValue("@product_id", filter.ProductId);
-
                 connection.Open();
 
                 using (SqlDataReader reader = command.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        ProductModel product = new ProductModel();
+                        Guid productId = reader["product_id"] != DBNull.Value
+                            ? reader.GetGuid(reader.GetOrdinal("product_id"))
+                            : Guid.Empty;
 
-                        int productIdIndex = reader.GetOrdinal("product_id");
-                        if (!reader.IsDBNull(productIdIndex))
+                        var product = products.FirstOrDefault(p => p.ProductId == productId);
+                        if (product == null)
                         {
-                            product.ProductId = reader.GetGuid(productIdIndex);
+                            product = new ProductModel
+                            {
+                                ProductId = productId,
+                                ProductName = reader["name"]?.ToString() ?? string.Empty,
+                                Variants = new List<Variant>()
+                            };
+                            products.Add(product);
                         }
-                        else
-                        {
-                            product.ProductId = Guid.Empty;
-                        }
-
-                        product.ProductName = reader["name"]?.ToString() ?? string.Empty;
-                        product.Variants = new List<Variant>();
 
                         string variantName = reader["variant"]?.ToString();
                         if (!string.IsNullOrWhiteSpace(variantName))
                         {
-                            var variant = new Variant
+                            var variant = product.Variants.FirstOrDefault(v => v.VariantName == variantName);
+                            if (variant == null)
                             {
-                                VariantName = variantName,
-                                SubVariants = new List<string>()
-                            };
+                                variant = new Variant
+                                {
+                                    VariantName = variantName,
+                                    SubVariants = new List<string>()
+                                };
+                                product.Variants.Add(variant);
+                            }
 
                             string subVariantName = reader["options"]?.ToString();
-                            if (!string.IsNullOrWhiteSpace(subVariantName))
+                            if (!string.IsNullOrWhiteSpace(subVariantName) &&
+                                !variant.SubVariants.Contains(subVariantName))
                             {
                                 variant.SubVariants.Add(subVariantName);
                             }
-
-                            product.Variants.Add(variant);
                         }
-
-                        products.Add(product); 
                     }
-
                 }
             }
 
             return products;
         }
+
 
 
 
